@@ -1,0 +1,23 @@
+{
+  "name": "ssp-certificate-node",
+  "version": "1.0.0",
+  "description": "스마트사회적처방 성과공유회 참가확인증 발급 웹 (Node.js/Express)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.4.0",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  }
+}

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>스마트사회적처방 성과공유회 참가확인증 발급</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+<link rel="stylesheet" as="style" crossorigin
+  href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css" />
+<link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+<div class="bg-decor" aria-hidden="true">
+  <span class="blob blob-navy"></span>
+  <span class="blob blob-orange"></span>
+</div>
+<div class="wrap">
+
+  <!-- ============================ 화면 1: 조회 ============================ -->
+  <section id="screen-lookup" class="screen active">
+    <div class="top-bar">
+      <span class="eyebrow">
+        <svg class="eyebrow-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2L14.4 8.5L21 9.3L16 13.8L17.5 20.5L12 17L6.5 20.5L8 13.8L3 9.3L9.6 8.5L12 2Z" fill="currentColor"/>
+        </svg>
+        스마트사회적처방 성과공유회
+      </span>
+    </div>
+    <h1 class="page-title">참가확인증 발급</h1>
+    <p class="page-desc">성과공유회에 함께해 주셔서 감사합니다.
+아래 정보를 입력하면 참가확인증을 확인하실 수 있습니다.</p>
+
+    <form id="lookup-form" class="card" novalidate>
+      <div class="field">
+        <label for="input-name">성함</label>
+        <div class="input-icon-wrap">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="8" r="3.6" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M4.5 20c1.2-3.8 4.3-5.8 7.5-5.8s6.3 2 7.5 5.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+          <input type="text" id="input-name" name="name" placeholder="예) 홍길동" autocomplete="name" required />
+        </div>
+      </div>
+      <div class="field">
+        <label for="input-phone">휴대폰번호</label>
+        <div class="input-icon-wrap">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="7" y="2.5" width="10" height="19" rx="2.2" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M10.5 18.2H13.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+          <input type="tel" id="input-phone" name="phone" placeholder="예) 010-1234-5678" autocomplete="tel" inputmode="numeric" required />
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary" id="lookup-submit">참가확인증 조회</button>
+
+      <div id="error-box" class="error-box"></div>
+    </form>
+
+    <p class="hint">
+      <svg class="hint-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M12 11v5.5M12 8v.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+      입력하신 정보는 참가확인증 발급 확인 용도로만 사용됩니다.
+    </p>
+  </section>
+
+  <!-- ============================ 화면 2: 확인증 ============================ -->
+  <section id="screen-certificate" class="screen">
+    <div class="cert-success no-print">
+      <span class="cert-success-icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M5 12.5L9.5 17L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      참가확인증이 확인되었습니다
+    </div>
+    <div class="cert-outer" id="cert-capture-area">
+      <div class="cert-topbar"></div>
+      <div class="cert-body">
+        <p class="cert-eyebrow" id="cert-event-eyebrow">스마트사회적처방 성과공유회</p>
+        <p class="cert-issueno">발급번호 <span id="cert-issueno">-</span></p>
+
+        <h2 class="cert-title">참가확인증</h2>
+
+        <div class="cert-info">
+          <dl>
+            <dt>행사명</dt>
+            <dd id="cert-event-name">스마트사회적처방 성과공유회</dd>
+            <dt>일시</dt>
+            <dd id="cert-event-datetime">2026년 9월 10일(목) 16:00~18:00</dd>
+            <dt>발급기관</dt>
+            <dd id="cert-issuer-info">밥상공동체종합사회복지관</dd>
+          </dl>
+        </div>
+
+        <p class="cert-name-row">성명: <span class="name-value" id="cert-name">-</span></p>
+
+        <p class="cert-paragraph">위 사람은 <span id="cert-date-inline">2026년 9월 10일</span> 개최된
+「<span class="event-name" id="cert-event-name-inline">스마트사회적처방 성과공유회</span>」에
+참석하였음을 확인합니다.</p>
+
+        <div class="cert-footer">
+          <p class="cert-date" id="cert-date">2026년 9월 10일</p>
+          <div class="cert-issuer-row">
+            <span class="cert-issuer" id="cert-issuer">밥상공동체종합사회복지관</span>
+            <span class="cert-seal">확인</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cert-actions no-print">
+      <button type="button" class="btn btn-accent" id="btn-pdf">
+        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 3v11.5M12 14.5L7.5 10M12 14.5L16.5 10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M4.5 16.5V18.3C4.5 19.5 5.5 20.5 6.7 20.5H17.3C18.5 20.5 19.5 19.5 19.5 18.3V16.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+        PDF 저장
+      </button>
+      <button type="button" class="btn btn-outline" id="btn-print">
+        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M6.5 9V4.5H17.5V9" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+          <rect x="4.5" y="9" width="15" height="7.5" rx="1.6" stroke="currentColor" stroke-width="1.8"/>
+          <rect x="7.5" y="13.5" width="9" height="6" rx="0.8" stroke="currentColor" stroke-width="1.8"/>
+        </svg>
+        인쇄
+      </button>
+      <button type="button" class="btn btn-ghost" id="btn-again">
+        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M19.5 4.5V9H15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        다시 조회
+      </button>
+    </div>
+  </section>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="/js/main.js"></script>
+</body>
+</html>

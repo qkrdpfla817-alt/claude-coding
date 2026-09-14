@@ -1,0 +1,633 @@
+:root {
+  --navy: #16264a;
+  --navy-dark: #0d1730;
+  --navy-soft: #3a4d76;
+  --navy-tint: #eef1f8;
+  --orange: #e07a1f;
+  --orange-dark: #c2650f;
+  --orange-tint: #fdf0e2;
+  --bg: #faf6ef;
+  --card-bg: #ffffff;
+  --border: #e6e0d3;
+  --text: #22262f;
+  --text-light: #6b7280;
+  --danger: #c0392b;
+  --radius: 16px;
+  --shadow-soft: 0 10px 30px rgba(22, 38, 74, 0.08);
+  --shadow-card: 0 2px 8px rgba(22, 38, 74, 0.05), 0 12px 28px rgba(22, 38, 74, 0.06);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'PretendardVariable', 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic',
+    -apple-system, BlinkMacSystemFont, sans-serif;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  position: relative;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* -------------------- 배경 장식 (은은하게) -------------------- */
+.bg-decor {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.bg-decor .blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.16;
+}
+
+.bg-decor .blob-navy {
+  width: 320px;
+  height: 320px;
+  top: -140px;
+  left: -110px;
+  background: var(--navy);
+}
+
+.bg-decor .blob-orange {
+  width: 260px;
+  height: 260px;
+  bottom: -120px;
+  right: -100px;
+  background: var(--orange);
+  opacity: 0.14;
+}
+
+.wrap {
+  position: relative;
+  z-index: 1;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 28px 16px 56px;
+  min-height: 100vh;
+}
+
+/* -------------------- 헤더 -------------------- */
+.top-bar {
+  text-align: center;
+  padding: 8px 0 4px;
+}
+
+.top-bar .eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--navy);
+  background: linear-gradient(180deg, #ffffff 0%, var(--navy-tint) 100%);
+  border: 1px solid #dfe4f0;
+  padding: 7px 16px 7px 12px;
+  border-radius: 999px;
+  letter-spacing: 0.01em;
+  box-shadow: 0 2px 8px rgba(22, 38, 74, 0.06);
+}
+
+.eyebrow-icon {
+  width: 14px;
+  height: 14px;
+  color: var(--orange);
+  flex-shrink: 0;
+}
+
+.page-title {
+  text-align: center;
+  font-size: 25px;
+  font-weight: 800;
+  color: var(--navy);
+  margin: 20px 0 10px;
+  letter-spacing: -0.01em;
+}
+
+.page-desc {
+  text-align: center;
+  font-size: 14.5px;
+  color: var(--text-light);
+  margin: 0 0 26px;
+  white-space: pre-line;
+}
+
+/* -------------------- 조회 폼 -------------------- */
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 26px 22px;
+  box-shadow: var(--shadow-card);
+  animation: fadeInUp 0.4s ease both;
+}
+
+.field {
+  margin-bottom: 18px;
+}
+
+.field label {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 8px;
+}
+
+.input-icon-wrap {
+  position: relative;
+}
+
+.input-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 19px;
+  height: 19px;
+  color: #a7adb9;
+  pointer-events: none;
+  transition: color 0.15s ease;
+}
+
+.input-icon-wrap:focus-within .input-icon {
+  color: var(--navy);
+}
+
+.field input {
+  width: 100%;
+  padding: 14px 14px 14px 44px;
+  font-size: 16px;
+  font-family: inherit;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: #fcfbf9;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.field input::placeholder {
+  color: #b7bcc6;
+}
+
+.field input:focus {
+  border-color: var(--navy);
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(22, 38, 74, 0.08);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 15px 16px;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: inherit;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: filter 0.15s ease, transform 0.08s ease, box-shadow 0.15s ease;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.btn-primary {
+  background: linear-gradient(180deg, #1c3059 0%, var(--navy) 100%);
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(22, 38, 74, 0.28);
+}
+.btn-primary:hover {
+  filter: brightness(1.08);
+  box-shadow: 0 8px 20px rgba(22, 38, 74, 0.32);
+}
+.btn-primary:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.btn-accent {
+  background: linear-gradient(180deg, #e88a34 0%, var(--orange) 100%);
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(224, 122, 31, 0.32);
+}
+.btn-accent:hover {
+  filter: brightness(1.05);
+}
+
+.btn-outline {
+  background: #fff;
+  color: var(--navy);
+  border: 1.5px solid var(--navy);
+}
+.btn-outline:hover {
+  background: var(--navy-tint);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-light);
+  border: 1.5px solid transparent;
+  box-shadow: none;
+}
+.btn-ghost:hover {
+  background: #f1efe9;
+  color: var(--navy);
+}
+
+.btn-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+@media (min-width: 480px) {
+  .btn-row {
+    flex-direction: row;
+  }
+}
+
+.error-box {
+  display: none;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: #fdecea;
+  border: 1px solid #f3c1ba;
+  color: var(--danger);
+  font-size: 14px;
+  white-space: pre-line;
+  font-weight: 600;
+  line-height: 1.6;
+  animation: shake 0.35s ease;
+}
+
+.error-box.show {
+  display: block;
+}
+
+.hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  margin-top: 16px;
+  font-size: 12.5px;
+  color: var(--text-light);
+  text-align: center;
+}
+
+.hint-icon {
+  width: 14px;
+  height: 14px;
+  color: #b7bcc6;
+  flex-shrink: 0;
+}
+
+/* -------------------- 로딩 스피너 -------------------- */
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-top-color: #fff;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 8px;
+  animation: spin 0.7s linear infinite;
+  vertical-align: -2px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-4px); }
+  40% { transform: translateX(4px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(3px); }
+}
+
+/* -------------------- 화면 전환 -------------------- */
+.screen {
+  display: none;
+}
+.screen.active {
+  display: block;
+  animation: fadeInUp 0.45s ease both;
+}
+
+/* -------------------- 발급 완료 배지 -------------------- */
+.cert-success {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 0 auto 16px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1e7d32;
+}
+
+.cert-success-icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #e6f4ea;
+  color: #1e7d32;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cert-success-icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* -------------------- 참가확인증 -------------------- */
+.cert-outer {
+  position: relative;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-soft);
+}
+
+.cert-topbar {
+  height: 8px;
+  background: linear-gradient(90deg, var(--navy) 0%, var(--navy) 70%, var(--orange) 70%, var(--orange) 100%);
+}
+
+.cert-body {
+  position: relative;
+  padding: 30px 24px 32px;
+  overflow: hidden;
+}
+
+/* 은은한 워터마크 (공공기관 확인증 느낌, 과하지 않게) */
+.cert-body::before {
+  content: '밥상공동체종합사회복지관';
+  position: absolute;
+  top: 52%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-24deg);
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--navy);
+  opacity: 0.035;
+  white-space: nowrap;
+  letter-spacing: 0.15em;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.cert-body > * {
+  position: relative;
+  z-index: 1;
+}
+
+.cert-eyebrow {
+  text-align: center;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--navy-soft);
+  letter-spacing: 0.04em;
+  margin-bottom: 6px;
+}
+
+.cert-issueno {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-light);
+  letter-spacing: 0.02em;
+  margin-bottom: 18px;
+}
+
+.cert-issueno span {
+  font-weight: 700;
+  color: var(--navy-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.cert-title {
+  text-align: center;
+  font-size: 27px;
+  font-weight: 800;
+  color: var(--navy);
+  letter-spacing: 0.5em;
+  padding-left: 0.5em; /* 마지막 글자 자간 보정 */
+  margin: 0 0 22px;
+}
+
+.cert-info {
+  border-top: 1.5px solid var(--navy);
+  border-bottom: 1.5px solid var(--border);
+  margin-bottom: 22px;
+}
+
+.cert-info dl {
+  display: grid;
+  grid-template-columns: 84px 1fr;
+  gap: 11px 12px;
+  margin: 0;
+  padding: 15px 4px;
+}
+
+.cert-info dt {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.cert-info dd {
+  font-size: 13.5px;
+  color: var(--text);
+  margin: 0;
+}
+
+.cert-name-row {
+  text-align: center;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 20px;
+}
+
+.cert-name-row .name-value {
+  color: var(--navy);
+  border-bottom: 2px solid var(--orange);
+  padding-bottom: 2px;
+}
+
+.cert-paragraph {
+  text-align: center;
+  font-size: 15px;
+  color: var(--text);
+  line-height: 1.9;
+  margin: 0 0 26px;
+  white-space: pre-line;
+}
+
+.cert-paragraph .event-name {
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.cert-footer {
+  text-align: center;
+}
+
+.cert-date {
+  font-size: 14.5px;
+  color: var(--text);
+  margin-bottom: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.cert-issuer-row {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.cert-issuer {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--navy);
+}
+
+/* 관인 느낌의 이중 원형 스탬프 */
+.cert-seal {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  border: 2px solid var(--orange);
+  border-radius: 50%;
+  color: var(--orange);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  transform: rotate(-8deg);
+  opacity: 0.92;
+}
+
+.cert-seal::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border: 1px solid var(--orange);
+  border-radius: 50%;
+  opacity: 0.7;
+}
+
+.cert-actions {
+  margin-top: 22px;
+}
+
+.cert-actions .btn {
+  margin-bottom: 10px;
+}
+
+/* -------------------- 인쇄 전용 -------------------- */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .bg-decor {
+    display: none;
+  }
+  #screen-certificate,
+  #screen-certificate * {
+    visibility: visible;
+  }
+  #screen-certificate {
+    display: block !important;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+  .cert-actions,
+  .no-print {
+    display: none !important;
+  }
+  .cert-outer {
+    box-shadow: none;
+    border: none;
+  }
+  .wrap {
+    max-width: 100%;
+    padding: 0;
+  }
+}
+
+/* -------------------- 반응형 (PC) -------------------- */
+@media (min-width: 768px) {
+  .wrap {
+    max-width: 580px;
+    padding-top: 56px;
+  }
+  .page-title {
+    font-size: 29px;
+  }
+  .cert-title {
+    font-size: 31px;
+  }
+  .card {
+    padding: 32px 30px;
+  }
+  .cert-body {
+    padding: 38px 34px 40px;
+  }
+}

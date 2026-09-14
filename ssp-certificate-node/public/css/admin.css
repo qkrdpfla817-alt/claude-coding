@@ -1,0 +1,159 @@
+.admin-wrap {
+  max-width: 860px;
+}
+
+.admin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.admin-header h1 {
+  font-size: 20px;
+  color: var(--navy);
+  margin: 0;
+}
+
+.btn-sm {
+  width: auto;
+  padding: 8px 14px;
+  font-size: 13px;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+@media (min-width: 720px) {
+  .grid-2 {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.card h2 {
+  font-size: 15px;
+  color: var(--navy);
+  margin: 0 0 14px;
+}
+
+textarea {
+  width: 100%;
+  min-height: 140px;
+  padding: 12px;
+  font-size: 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.form-row {
+  display: flex;
+  gap: 10px;
+}
+
+.form-row .field {
+  flex: 1;
+  margin-bottom: 12px;
+}
+
+.status-msg {
+  margin-top: 12px;
+  font-size: 13.5px;
+  white-space: pre-line;
+}
+.status-msg.ok {
+  color: #1e7d32;
+}
+.status-msg.err {
+  color: var(--danger);
+}
+
+.table-card {
+  padding: 0;
+  overflow: hidden;
+}
+
+.table-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.table-toolbar input {
+  padding: 8px 10px;
+  border: 1.5px solid var(--border);
+  border-radius: 6px;
+  font-size: 13.5px;
+  width: 180px;
+}
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+table.list {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+
+table.list th,
+table.list td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+table.list th {
+  background: #f4f6fa;
+  color: var(--navy);
+  font-weight: 700;
+}
+
+table.list tr:last-child td {
+  border-bottom: none;
+}
+
+.badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.badge.issued {
+  background: #eaf3ec;
+  color: #1e7d32;
+}
+.badge.pending {
+  background: #f1f2f5;
+  color: var(--text-light);
+}
+
+.del-btn {
+  border: none;
+  background: none;
+  color: var(--danger);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.empty-row td {
+  text-align: center;
+  color: var(--text-light);
+  padding: 24px 12px;
+}
+
+#login-screen {
+  max-width: 360px;
+  margin: 80px auto 0;
+}

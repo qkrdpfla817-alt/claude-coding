@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>참가확인증 발급 - 관리자</title>
+<link rel="stylesheet" href="/css/style.css" />
+<link rel="stylesheet" href="/css/admin.css" />
+</head>
+<body>
+<div class="wrap admin-wrap">
+
+  <!-- 로그인 화면 -->
+  <section id="login-screen" class="screen active">
+    <div class="top-bar"><span class="eyebrow">스마트사회적처방 성과공유회</span></div>
+    <h1 class="page-title">관리자 로그인</h1>
+    <form id="login-form" class="card" novalidate>
+      <div class="field">
+        <label for="admin-password">비밀번호</label>
+        <input type="password" id="admin-password" required autocomplete="current-password" />
+      </div>
+      <button type="submit" class="btn btn-primary">로그인</button>
+      <div id="login-error" class="error-box"></div>
+    </form>
+  </section>
+
+  <!-- 관리자 화면 -->
+  <section id="admin-screen" class="screen">
+    <div class="admin-header">
+      <h1>참가자 명단 관리</h1>
+      <button id="btn-logout" class="btn btn-outline btn-sm">로그아웃</button>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h2>개별 등록</h2>
+        <div class="form-row">
+          <div class="field">
+            <label for="single-name">성함</label>
+            <input type="text" id="single-name" placeholder="홍길동" />
+          </div>
+          <div class="field">
+            <label for="single-phone">휴대폰번호</label>
+            <input type="text" id="single-phone" placeholder="010-1234-5678" />
+          </div>
+        </div>
+        <button id="btn-add-single" class="btn btn-primary">등록</button>
+        <div id="single-status" class="status-msg"></div>
+      </div>
+
+      <div class="card">
+        <h2>일괄 등록 (한 줄에 "이름,전화번호")</h2>
+        <textarea id="bulk-text" placeholder="홍길동,01012345678&#10;김철수,010-2345-6789"></textarea>
+        <button id="btn-add-bulk" class="btn btn-accent" style="margin-top:10px;">일괄 등록</button>
+        <div id="bulk-status" class="status-msg"></div>
+      </div>
+    </div>
+
+    <div class="card table-card">
+      <div class="table-toolbar">
+        <strong id="count-label">전체 0명</strong>
+        <input type="text" id="search-box" placeholder="이름/전화번호 검색" />
+      </div>
+      <div class="table-scroll">
+        <table class="list">
+          <thead>
+            <tr>
+              <th>성함</th>
+              <th>휴대폰번호</th>
+              <th>발급상태</th>
+              <th>발급번호</th>
+              <th>등록일시</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="list-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+</div>
+<script src="/js/admin.js"></script>
+</body>
+</html>

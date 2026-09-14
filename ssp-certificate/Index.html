@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>스마트사회적처방 성과공유회 - 참가확인증 발급</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+<!--
+  PDF 다운로드용 라이브러리 (무료 CDN, 인터넷 연결 필요)
+  - html2canvas : 확인증 영역을 고해상도 이미지로 캡처
+  - jsPDF       : 캡처한 이미지를 A4 한 장짜리 PDF로 저장
+-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+  :root {
+    --navy: #1b3a5c;
+    --gray: #6d7580;
+    --gothic: "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #eef0f3;
+    color: #1a1a1a;
+    font-family: var(--gothic);
+    -webkit-text-size-adjust: 100%;
+  }
+
+  main { max-width: 560px; margin: 0 auto; padding: 28px 16px 64px; }
+
+  [hidden] { display: none !important; }
+
+  /* ============================ 화면 1: 입력 ============================ */
+  .card {
+    background: #fff;
+    border: 1px solid #dfe3e8;
+    border-radius: 12px;
+    padding: 30px 24px;
+  }
+
+  .page-title {
+    font-size: 22px; font-weight: 700; color: var(--navy);
+    text-align: center; margin: 0 0 10px;
+  }
+
+  .page-desc {
+    text-align: center; font-size: 14px; line-height: 1.75;
+    color: var(--gray); margin: 0 0 26px; word-break: keep-all;
+  }
+
+  .form-group { margin-bottom: 16px; }
+
+  .form-group label {
+    display: block; font-size: 14px; font-weight: 700;
+    color: var(--navy); margin-bottom: 7px;
+  }
+
+  .form-group input {
+    width: 100%; padding: 14px 13px; font-size: 16px;
+    border: 1px solid #d5dae1; border-radius: 8px;
+    outline: none; background: #fff; color: #1a1a1a;
+    font-family: var(--gothic); -webkit-appearance: none;
+  }
+  .form-group input:focus { border-color: var(--navy); }
+
+  .helper-text { font-size: 12px; color: var(--gray); margin-top: 6px; }
+
+  .btn {
+    display: block; width: 100%; padding: 15px;
+    font-size: 16px; font-weight: 700; border-radius: 8px;
+    cursor: pointer; text-align: center;
+    border: 1px solid transparent; font-family: var(--gothic);
+    -webkit-appearance: none;
+  }
+  .btn-primary { background: var(--navy); color: #fff; margin-top: 10px; }
+  .btn-primary:disabled { background: #93a3b4; cursor: not-allowed; }
+  .btn-secondary { background: #fff; color: var(--navy); border-color: var(--navy); }
+
+  .btn-row { display: flex; gap: 10px; margin-top: 14px; }
+  .btn-row .btn { margin-top: 0; }
+
+  .error-box {
+    margin-top: 16px; padding: 13px 15px;
+    background: #fdf1ef; border: 1px solid #f0c4bb; color: #a63a1e;
+    border-radius: 8px; font-size: 14px; line-height: 1.6;
+    text-align: center; word-break: keep-all;
+  }
+
+  .spinner {
+    display: inline-block; width: 16px; height: 16px;
+    border: 3px solid rgba(255,255,255,0.5); border-top-color: #fff;
+    border-radius: 50%; animation: spin 0.8s linear infinite;
+    vertical-align: -3px; margin-right: 8px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* =====================================================================
+     화면 2: 참가확인증
+
+     ★★ 구조 설명 (여기만 이해하시면 위치 조정이 쉽습니다) ★★
+
+       .cert-stage   : 휴대폰/PC 화면 폭에 맞춰 확인증을 "보기 좋게 축소"하는 바깥 영역
+       .cert-scaler  : 실제 크기를 유지한 채 transform으로만 축소되는 틀
+       .certificate  : 확인증 본체 (A4 비율 고정). PDF/인쇄는 이 크기 그대로 출력됩니다.
+         └ img.certificate-bg : 예림님이 만드신 배경 PNG (행사명·제목·본문·직인·테두리 포함)
+         └ .cert-org          : 소속     ← 웹에서 얹는 값 1
+         └ .cert-name         : 성명     ← 웹에서 얹는 값 2
+         └ .cert-no           : 발급번호 ← 웹에서 얹는 값 3
+
+     배경 PNG 위에 글자 3개만 "절대 위치"로 올려놓는 방식입니다.
+     ===================================================================== */
+  .cert-stage { width: 100%; overflow: hidden; }
+
+  .cert-scaler {
+    /* 배경 PNG 원본 크기(794 x 1123px, A4 비율)를 기준 좌표계로 사용합니다.
+       나중에 PNG를 더 고화질(예: 2480x3508)로 바꾸셔도
+       아래 % 값은 그대로 쓰시면 됩니다. 이 숫자는 건드리지 마세요. */
+    width: 794px;
+    height: 1123px;
+    transform-origin: top left;
+  }
+
+  .certificate {
+    position: relative;          /* ← 글자들을 이 박스 기준으로 배치 */
+    width: 794px;
+    height: 1123px;
+    background: #ffffff;
+    overflow: hidden;
+    font-family: var(--gothic);
+    color: #1a1a1a;
+  }
+
+  /* 배경 이미지 : 확인증 전체를 꽉 채웁니다. */
+  .certificate-bg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  /* 배경 PNG가 아직 등록되지 않았을 때 안내 문구 */
+  .bg-missing {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center; padding: 40px;
+    font-size: 16px; line-height: 1.9; color: #a63a1e;
+    background: #fdf7f5; border: 2px dashed #e0b7ab;
+    word-break: keep-all;
+  }
+
+  /* =====================================================================
+     ▼▼▼▼▼  위치 / 글자 크기 조정 구역  ▼▼▼▼▼
+     아래 3개 블록의 숫자만 바꾸시면 글자 위치와 크기가 바뀝니다.
+
+       top    : 위에서부터의 거리 (0% = 맨 위, 100% = 맨 아래)
+                → 숫자를 키우면 글자가 "아래로" 내려갑니다.
+       left   : 왼쪽에서부터의 거리 (0% = 맨 왼쪽, 100% = 맨 오른쪽)
+                → 숫자를 키우면 글자가 "오른쪽으로" 이동합니다.
+       font-size : 글자 크기 (px). 숫자를 키우면 글자가 커집니다.
+
+     ※ 1% 는 약 8px(가로) / 11px(세로) 입니다. 조금씩(0.5%씩) 옮겨 보세요.
+     ※ 수정 후에는 반드시 저장 → 웹앱 새로고침 하셔야 반영됩니다.
+     ===================================================================== */
+
+  /* -------------------------------------------------------------------
+     ① 소속   (배경 PNG의 "소 속 :" 라벨 오른쪽 빈칸)
+     -------------------------------------------------------------------
+     · 글씨체 / 크기 / 굵기 / 자간을 아래 ② 성명과 똑같이 맞춰 두었습니다.
+       (둘 중 하나만 바꾸면 짝이 안 맞으니, 바꾸실 땐 ①②를 같이 고쳐 주세요)
+     · 기관명이 길어 자리를 넘치면 자동으로 글자 크기가 줄어듭니다(최소 14px).
+       → 최소 크기는 맨 아래 JS의 ORG_MIN_FONT 에서 조정
+     ------------------------------------------------------------------- */
+  .cert-org {
+    position: absolute;
+    top: 40.0%;              /* ← 위아래 위치 (숫자 ↑ = 아래로) */
+    left: 29.6%;             /* ← 좌우 위치  (숫자 ↑ = 오른쪽으로) */
+    transform: translateY(-50%);   /* 글자의 세로 중심을 top 위치에 맞춤 */
+
+    transform-origin: left center;  /* 아주 긴 소속명을 가로로 눌러 담을 때의 기준점 */
+
+    max-width: 58%;          /* ← 글자가 차지할 수 있는 최대 가로 폭 (넘치면 자동 축소) */
+    font-size: 27px;         /* ← 소속 글자 크기  (② 성명과 동일) */
+    font-weight: 700;        /* ← 굵기            (② 성명과 동일) */
+    letter-spacing: 0.14em;  /* ← 글자 사이 간격  (② 성명과 동일) */
+    color: #14212e;          /* ← 글자 색         (② 성명과 동일) */
+    white-space: nowrap;     /* 한 줄로 유지 (줄바꿈 대신 크기를 줄입니다) */
+    line-height: 1.3;
+  }
+
+  /* -------------------------------------------------------------------
+     ② 성명   (배경 PNG의 "성 명 :" 라벨 오른쪽 빈칸)
+     -------------------------------------------------------------------
+     · 2~5글자 한글 이름이 자연스럽도록 굵게, 살짝 크게 설정했습니다.
+     ------------------------------------------------------------------- */
+  .cert-name {
+    position: absolute;
+    top: 44.6%;              /* ← 위아래 위치 (숫자 ↑ = 아래로) */
+    left: 29.6%;             /* ← 좌우 위치  (숫자 ↑ = 오른쪽으로) */
+    transform: translateY(-50%);
+
+    font-size: 27px;         /* ← 성명 글자 크기  (① 소속과 동일하게 유지) */
+    font-weight: 700;        /* ← 굵기 (400 보통 / 500 중간 / 700 굵게 / 900 아주 굵게) */
+    letter-spacing: 0.14em;  /* ← 글자 사이 간격 (이름이 또박또박 보입니다) */
+    color: #14212e;
+    white-space: nowrap;
+    line-height: 1.3;
+  }
+
+  /* -------------------------------------------------------------------
+     ③ 발급번호   (맨 아래 왼쪽 여백. 직인·금색 띠와 겹치지 않는 자리)
+     -------------------------------------------------------------------
+     · 강조하지 않는 작은 회색 글씨입니다.
+     ------------------------------------------------------------------- */
+  .cert-no {
+    position: absolute;
+    top: 92.5%;              /* ← 위아래 위치 (숫자 ↑ = 아래로) */
+    left: 7.6%;              /* ← 좌우 위치  (숫자 ↑ = 오른쪽으로) */
+
+    font-size: 12px;         /* ← 발급번호 글자 크기 */
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    color: #8b949e;          /* ← 글자 색 (진하게 하려면 #6d7580 등으로) */
+    white-space: nowrap;
+  }
+
+  /* =====================================================================
+     ▲▲▲▲▲  위치 / 글자 크기 조정 구역 끝  ▲▲▲▲▲
+     ===================================================================== */
+
+  .cert-actions { margin-top: 22px; }
+
+  /* --------------------------- 인쇄 (A4 한 장) --------------------------- */
+  @page { size: A4 portrait; margin: 0; }
+
+  @media print {
+    body { background: #fff; }
+    body * { visibility: hidden; }
+    .certificate, .certificate * { visibility: visible; }
+    .cert-stage { overflow: visible; height: auto !important; }
+    /* 인쇄할 때는 화면용 축소를 풀고 원본 크기로 출력합니다.
+       (794 x 1123px = A4 210 x 297mm 와 사실상 같은 크기입니다) */
+    .cert-scaler { transform: none !important; }
+    .certificate {
+      position: absolute; top: 0; left: 0; margin: 0;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+  }
+</style>
+</head>
+<body>
+
+<main>
+
+  <!-- ========================= 화면 1: 정보 입력 ========================= -->
+  <section id="lookupScreen">
+    <div class="card">
+      <h1 class="page-title">참가확인증 발급</h1>
+      <p class="page-desc">
+        「스마트사회적처방 성과공유회」에 참석해 주셔서 감사합니다.<br>
+        아래 정보를 입력하시면 참가확인증을 발급받으실 수 있습니다.
+      </p>
+
+      <form id="lookupForm" novalidate>
+        <div class="form-group">
+          <label for="nameInput">성명</label>
+          <input type="text" id="nameInput" placeholder="예) 홍길동" autocomplete="name" required>
+        </div>
+
+        <div class="form-group">
+          <label for="phoneInput">휴대폰번호</label>
+          <input type="tel" id="phoneInput" placeholder="010-1234-5678" inputmode="numeric"
+                 autocomplete="tel" maxlength="13" required>
+          <div class="helper-text">숫자만 입력하시면 하이픈(-)이 자동으로 입력됩니다.</div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="submitBtn">확인증 발급</button>
+      </form>
+
+      <div id="errorBox" class="error-box" hidden></div>
+    </div>
+  </section>
+
+  <!-- ========================= 화면 2: 참가확인증 ========================= -->
+  <section id="certScreen" hidden>
+    <div class="cert-stage" id="certStage">
+      <div class="cert-scaler" id="certScaler">
+        <div class="certificate" id="certificateEl">
+
+          <!-- 배경 PNG. Code.gs가 Background 파일의 base64 값을 여기에 넣어 줍니다. -->
+          <img class="certificate-bg" id="certBg" src="<?!= backgroundUrl ?>" alt="참가확인증">
+
+          <!-- 배경이 아직 등록되지 않았을 때만 보이는 안내 -->
+          <div class="bg-missing" id="bgMissing" hidden>
+            <div>
+              배경 이미지를 불러오지 못했습니다.<br>
+              <span style="font-size:13px;color:#7a6a64;">
+                아래 진단 내용을 확인해 주세요.
+              </span>
+              <div id="bgDiag" style="margin-top:18px;font-size:13px;color:#4a5560;
+                   background:#fff;border:1px solid #e0d3ce;border-radius:6px;
+                   padding:12px 14px;text-align:left;line-height:1.8;
+                   word-break:break-all;font-family:Consolas,monospace;"></div>
+            </div>
+          </div>
+
+          <!-- 서버가 알려준 진단 정보 (Code.gs의 doGet에서 전달) -->
+          <div id="bgDiagRaw" hidden><?= backgroundDiag ?></div>
+
+          <!-- ↓ 배경 위에 얹는 동적 값 3개 -->
+          <div class="cert-org"  id="certOrgText"></div>
+          <div class="cert-name" id="certNameText"></div>
+          <div class="cert-no"   id="certNoText"></div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="cert-actions">
+      <div class="btn-row">
+        <button type="button" class="btn btn-primary" id="pdfBtn">PDF 다운로드</button>
+        <button type="button" class="btn btn-secondary" id="printBtn">인쇄</button>
+      </div>
+      <div class="btn-row">
+        <button type="button" class="btn btn-secondary" id="backBtn">다시 조회하기</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  var lookupForm    = document.getElementById('lookupForm');
+  var nameInput     = document.getElementById('nameInput');
+  var phoneInput    = document.getElementById('phoneInput');
+  var submitBtn     = document.getElementById('submitBtn');
+  var errorBox      = document.getElementById('errorBox');
+  var lookupScreen  = document.getElementById('lookupScreen');
+  var certScreen    = document.getElementById('certScreen');
+  var certStage     = document.getElementById('certStage');
+  var certScaler    = document.getElementById('certScaler');
+  var certificateEl = document.getElementById('certificateEl');
+  var certBg        = document.getElementById('certBg');
+  var bgMissing     = document.getElementById('bgMissing');
+
+  var certOrgEl  = document.getElementById('certOrgText');
+  var certNameEl = document.getElementById('certNameText');
+  var certNoEl   = document.getElementById('certNoText');
+
+  /* ★ 소속 글자 자동 축소 설정 ★
+     소속명이 길어서 자리를 넘칠 때, 이 범위 안에서 글자 크기를 자동으로 줄입니다.
+       ORG_BASE_FONT : 기본 크기. 성명과 같은 27px 입니다.
+                       (CSS의 .cert-org font-size 와 반드시 같은 숫자로 맞춰 주세요)
+       ORG_MIN_FONT  : 아무리 길어도 이 크기보다 작아지지는 않습니다.
+     짧은 기관명은 27px 그대로 나오므로 성명과 똑같은 크기로 보입니다. */
+  var ORG_BASE_FONT = 27;
+  var ORG_MIN_FONT  = 14;
+
+  var NOT_FOUND_MESSAGE =
+    '입력하신 정보를 확인할 수 없습니다. 성명과 휴대폰번호를 다시 확인해 주세요.';
+
+  /* 배경 이미지가 비어 있으면 안내 문구 + 진단 정보를 띄웁니다. */
+  (function checkBackground() {
+    var src = certBg.getAttribute('src') || '';
+    var ok = (src.indexOf('data:image') === 0 || src.indexOf('http') === 0);
+    if (ok) return;
+
+    certBg.style.display = 'none';
+    bgMissing.hidden = false;
+
+    var rawEl = document.getElementById('bgDiagRaw');
+    var diag = rawEl ? (rawEl.textContent || '').trim() : '';
+
+    var lines = [];
+    lines.push('서버 진단 : ' + (diag || '(전달되지 않음)'));
+    lines.push('src 길이 : ' + src.length + '자');
+    lines.push('src 앞부분 : ' + (src.substring(0, 60) || '(비어 있음)'));
+
+    // 템플릿 치환이 아예 안 된 경우(= Code.gs가 옛날 버전)를 잡아냅니다.
+    if (src.indexOf('<?') === 0 || src.indexOf('backgroundUrl') > -1) {
+      lines.push('');
+      lines.push('▶ Code.gs가 옛날 버전입니다.');
+      lines.push('  doGet이 createTemplateFromFile을 쓰는지 확인하고');
+      lines.push('  새 버전으로 다시 배포해 주세요.');
+    } else if (!diag) {
+      lines.push('');
+      lines.push('▶ Code.gs가 옛날 버전이거나 재배포가 안 되었습니다.');
+      lines.push('  [배포] > [배포 관리] > 연필 > 버전 "새 버전" > [배포]');
+    }
+
+    document.getElementById('bgDiag').textContent = lines.join('\n');
+    document.getElementById('bgDiag').style.whiteSpace = 'pre-wrap';
+  })();
+
+  /* --------------------- 휴대폰번호 하이픈 자동 입력 --------------------- */
+  phoneInput.addEventListener('input', function () {
+    var digits = this.value.replace(/[^0-9]/g, '').slice(0, 11);
+    if (digits.length > 7) {
+      this.value = digits.slice(0, 3) + '-' + digits.slice(3, 7) + '-' + digits.slice(7);
+    } else if (digits.length > 3) {
+      this.value = digits.slice(0, 3) + '-' + digits.slice(3);
+    } else {
+      this.value = digits;
+    }
+  });
+
+  /* --------------------------- 확인증 발급 요청 ---------------------------
+     명단 대조는 전부 Code.gs(issueCertificate) 서버 측에서 수행됩니다.
+     브라우저에는 조회에 성공한 "본인의 성명 / 소속 / 발급번호"만 전달되며,
+     전체 명단은 절대 브라우저로 내려오지 않습니다. */
+  lookupForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    hideError();
+
+    var name = nameInput.value.trim();
+    var phone = phoneInput.value.trim();
+
+    if (!name) { showError('성명을 입력해 주세요.'); return; }
+    if (phone.replace(/[^0-9]/g, '').length < 9) {
+      showError('휴대폰번호를 정확히 입력해 주세요.');
+      return;
+    }
+
+    setLoading(true);
+    google.script.run
+      .withSuccessHandler(onLookupSuccess)
+      .withFailureHandler(onLookupFailure)
+      .issueCertificate(name, phone);
+  });
+
+  function onLookupSuccess(result) {
+    setLoading(false);
+    if (!result || !result.success) {
+      showError((result && result.message) || NOT_FOUND_MESSAGE);
+      return;
+    }
+    renderCertificate(result);
+    lookupScreen.hidden = true;
+    certScreen.hidden = false;
+    fitCertificate();
+    window.scrollTo(0, 0);
+  }
+
+  function onLookupFailure() {
+    setLoading(false);
+    showError('오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
+  }
+
+  /* 배경 PNG 위에 값 3개를 얹습니다. */
+  function renderCertificate(result) {
+    certNameEl.textContent = result.name || '';
+    certOrgEl.textContent  = result.org || '';
+    certNoEl.textContent   = result.certNo ? ('발급번호 : ' + result.certNo) : '';
+
+    // 소속이 길면 자리 안에 들어오도록 글자 크기를 자동으로 줄입니다.
+    shrinkToFit(certOrgEl, ORG_BASE_FONT, ORG_MIN_FONT);
+  }
+
+  /* ------------------------- 긴 소속명 자동 맞춤 -------------------------
+     1단계: 정해진 폭을 넘지 않을 때까지 글자 크기를 1px씩 줄입니다.
+     2단계: 최소 크기까지 줄여도 넘치면, 가로로 살짝 눌러서 담습니다.
+            (어떤 경우에도 소속명이 잘리지 않게 하기 위한 안전장치입니다) */
+  function shrinkToFit(el, basePx, minPx) {
+    el.style.transform = 'translateY(-50%)';
+    el.style.fontSize = basePx + 'px';
+    if (!el.textContent) return;
+
+    // 허용 폭 = CSS의 max-width (예: 58%) 를 실제 픽셀로 환산
+    var maxW = getComputedStyle(el).maxWidth;
+    var limit;
+    if (maxW.indexOf('%') > -1) {
+      var box = el.offsetParent || el.parentNode;
+      limit = box.clientWidth * (parseFloat(maxW) / 100);
+    } else {
+      limit = parseFloat(maxW);
+    }
+    if (!limit || isNaN(limit)) limit = el.clientWidth;
+
+    // 1단계 - 글자 크기 줄이기
+    var size = basePx;
+    while (size > minPx && el.scrollWidth > limit) {
+      size -= 1;
+      el.style.fontSize = size + 'px';
+    }
+
+    // 2단계 - 그래도 넘치면 가로로 압축 (최대 20%까지만)
+    if (el.scrollWidth > limit) {
+      var ratio = Math.max(0.8, limit / el.scrollWidth);
+      el.style.transform = 'translateY(-50%) scaleX(' + ratio + ')';
+    }
+  }
+
+  /* ------------------- 화면 폭에 맞춰 확인증 축소 표시 -------------------
+     원본 크기(794px)를 유지한 채 transform으로만 줄여서 보여줍니다.
+     PDF / 인쇄는 축소되지 않은 원본 크기로 출력됩니다. */
+  function fitCertificate() {
+    if (certScreen.hidden) return;
+    var available = certStage.clientWidth;
+    var realWidth = certScaler.offsetWidth;
+    var realHeight = certScaler.offsetHeight;
+    if (!realWidth) return;
+
+    var scale = Math.min(available / realWidth, 1);
+    certScaler.style.transform = 'scale(' + scale + ')';
+    certStage.style.height = (realHeight * scale) + 'px';
+  }
+  window.addEventListener('resize', fitCertificate);
+
+  /* ------------------------------ PDF 다운로드 ------------------------------
+     축소 표시용 transform의 영향을 받지 않도록 확인증을 원본 크기로 복제해
+     화면 밖에서 캡처한 뒤, A4 페이지(210x297mm)에 정확히 한 장으로 채웁니다. */
+  document.getElementById('pdfBtn').addEventListener('click', function () {
+    var btn = this;
+    btn.disabled = true;
+    btn.textContent = '생성 중...';
+
+    var holder = document.createElement('div');
+    holder.style.cssText = 'position:fixed;left:-10000px;top:0;background:#ffffff;';
+    var clone = certificateEl.cloneNode(true);
+    holder.appendChild(clone);
+    document.body.appendChild(holder);
+
+    function done() {
+      if (holder.parentNode) document.body.removeChild(holder);
+      btn.disabled = false;
+      btn.textContent = 'PDF 다운로드';
+    }
+
+    var fileName = '참가확인증_' + (certNameEl.textContent || '') + '.pdf';
+
+    /* 캡처 배율 : 배경 PNG가 고화질일수록 더 선명하게 뽑습니다.
+       (원본 794px 기준 3배 = 약 2382px, 최대 4배까지) */
+    var scale = 3;
+    if (certBg.naturalWidth) {
+      scale = Math.max(3, Math.min(4, certBg.naturalWidth / 794));
+    }
+
+    var fontsReady = (document.fonts && document.fonts.ready)
+      ? document.fonts.ready : Promise.resolve();
+
+    fontsReady.then(function () {
+      return html2canvas(clone, { scale: scale, backgroundColor: '#ffffff', useCORS: true });
+    }).then(function (canvas) {
+      var pdf = new window.jspdf.jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+      pdf.addImage(canvas.toDataURL('image/jpeg', 0.98), 'JPEG', 0, 0, 210, 297);
+      pdf.save(fileName);
+      done();
+    }).catch(function () {
+      done();
+      alert('PDF 생성 중 오류가 발생했습니다. [인쇄] 버튼에서 "PDF로 저장"을 선택해 주세요.');
+    });
+  });
+
+  document.getElementById('printBtn').addEventListener('click', function () {
+    window.print();
+  });
+
+  document.getElementById('backBtn').addEventListener('click', function () {
+    certScreen.hidden = true;
+    lookupScreen.hidden = false;
+    lookupForm.reset();
+    hideError();
+  });
+
+  function setLoading(isLoading) {
+    submitBtn.disabled = isLoading;
+    submitBtn.innerHTML = isLoading
+      ? '<span class="spinner"></span>확인 중...'
+      : '확인증 발급';
+  }
+
+  function showError(msg) {
+    errorBox.textContent = msg;
+    errorBox.hidden = false;
+  }
+
+  function hideError() {
+    errorBox.hidden = true;
+    errorBox.textContent = '';
+  }
+</script>
+
+</body>
+</html>
