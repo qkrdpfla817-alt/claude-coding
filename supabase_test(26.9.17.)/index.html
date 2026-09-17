@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>프로그램 신청</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>프로그램 신청</h1>
+
+      <form id="apply-form">
+        <label>
+          이름
+          <input type="text" name="name" required />
+        </label>
+        <label>
+          연락처
+          <input type="tel" name="contact" placeholder="010-0000-0000" required />
+        </label>
+        <label>
+          신청 프로그램
+          <input type="text" name="program" required />
+        </label>
+        <button type="submit">신청하기</button>
+      </form>
+      <p id="status"></p>
+
+      <h2>신청자 목록</h2>
+      <table id="list-table">
+        <thead>
+          <tr>
+            <th>이름</th>
+            <th>연락처</th>
+            <th>신청 프로그램</th>
+            <th>신청일시</th>
+          </tr>
+        </thead>
+        <tbody id="list-body"></tbody>
+      </table>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
